@@ -35,6 +35,7 @@ class SamPredictor:
         self,
         image: np.ndarray,
         image_format: str = "RGB",
+        image_embedding=None
     ) -> None:
         """
         Calculates the image embeddings for the provided image, allowing
@@ -57,13 +58,14 @@ class SamPredictor:
         input_image_torch = torch.as_tensor(input_image, device=self.device)
         input_image_torch = input_image_torch.permute(2, 0, 1).contiguous()[None, :, :, :]
 
-        self.set_torch_image(input_image_torch, image.shape[:2])
+        self.set_torch_image(input_image_torch, image.shape[:2],image_embedding)
 
     @torch.no_grad()
     def set_torch_image(
         self,
         transformed_image: torch.Tensor,
         original_image_size: Tuple[int, ...],
+        image_embedding
     ) -> None:
         """
         Calculates the image embeddings for the provided image, allowing
@@ -86,7 +88,10 @@ class SamPredictor:
         self.original_size = original_image_size
         self.input_size = tuple(transformed_image.shape[-2:])
         input_image = self.model.preprocess(transformed_image)
-        self.features = self.model.image_encoder(input_image)
+        if image_embedding is not None:
+          self.features = image_embedding
+        else:
+          self.features = self.model.image_encoder(input_image)
         self.is_image_set = True
 
     def predict(
