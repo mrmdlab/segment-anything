@@ -1,0 +1,5 @@
+- author: Magnetic Resonance Methods Development
+- website: https://mrmdlab.github.io/
+- files changed
+    - segment_anything/predictor.py
+        - added one parameter `image_embedding` to `SamPredictor.set_image()` so that the image embedding can be saved and loaded.
